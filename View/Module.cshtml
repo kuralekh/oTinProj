@@ -1,0 +1,507 @@
+﻿@using System.Diagnostics.Eventing.Reader
+@using System.Web.UI.WebControls
+@using Portal.Web.Models
+@model Portal.Web.Controllers.ViewModel.ModuleViewModel
+
+@{
+    ViewBag.Title = "Add Module";
+    ViewBag.SubTitle = ViewBag.Title;
+    ViewBag.Icon = "en-house";
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+}
+
+
+<link href="~/Content/bootstrap-theme.css" rel="stylesheet" />
+<link href="~/Content/datepicker3.css" rel="stylesheet" />
+
+<br />
+<div class="container center_div">
+
+    <form class="form-horizontal selectors addModule" id="companyForm" method="post" enctype="multipart/form-data" action="/CourseManagement/Module?courseId=@(ViewBag.CourseId)&amp;id=@(Model.id)">
+        <div class="container">
+            <br>
+            <br>
+            <input type="file" style="display: none;" id="files" name="cover" data-preview="#img" />
+            <div class="center-block" style="width: 900px; position: relative; right: 30px;">
+                <div style="width: 190px; margin-right: 10px; float: left; border-right-style: solid; border-right-width: 2px; border-right-color: rgb(243, 244, 246);">
+
+                    <div class="cover" style="width: 193px; height: 250px; position: relative; left: -5px">
+                        @if (Model.imageUrl != null)
+                        {
+                            ViewBag.path = Model.imageUrl;
+                        }
+                        else
+                        {
+                            ViewBag.path = "/Content/courses/cover.png";
+                        }
+                        <img src="@ViewBag.path" id="img" width="194px" height="250px" />
+                        <a href="#" style="text-decoration: none;">
+                            <div class="photoModal">
+                                <img src="/Content/camera.png" height="20px;" width="20px;" style="margin-right: 10px;" />
+                                Add cover
+                            </div>
+                        </a>
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Time<span class="mandatory">*</span></label>
+                            <div class="col-sm-9" style="padding-left: 0">
+                                <input type="text" name="time" class="form-control" value="@Model.time" style="max-width: 100px; margin-left: 30px">
+                            </div>
+                            @Html.ValidationMessage("time")
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Released</label>
+                            <div class="col-sm-9" style="padding-left: 0">
+                                <input type="text" name="released" class="form-control date" value="@Model.released" style="max-width: 100px; margin-left: 30px; font-size: 10pt;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Author<span class="mandatory">*</span></label>
+                            <div id="dropdownauthor" class="btn-group col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                <button type="button" class="btn btn-default lable">Author</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <input type="hidden" name="author" value="@(Model.author == 0 ? Html.Raw("") : Html.Raw(Model.author))" />
+                                <ul class="dropdown-menu" role="menu">
+                                    @foreach (SelectListItem item in ViewBag.authors)
+                                    {
+                                        if (item.Value != Model.author.ToString())
+                                        {
+                                            <li data-item="@item.Value"><a>@item.Text</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li class="selected" data-item="@item.Value"><a>@item.Text</a></li>
+                                        }
+                                    }
+                                </ul>
+                                @Html.ValidationMessage("author")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Producer<span class="mandatory">*</span></label>
+                            <div id="dropdownproducer" class="btn-group col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                <button type="button" class="btn btn-default lable">Produced by</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <input type="hidden" name="producer" value="@(Model.producer == 0 ? Html.Raw("") : Html.Raw(Model.producer))" />
+                                <ul class="dropdown-menu" role="menu">
+                                    @foreach (SelectListItem item in ViewBag.producers)
+                                    {
+                                        if (item.Value != Model.producer.ToString())
+                                        {
+                                            <li data-item="@item.Value"><a>@item.Text</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li class="selected" data-item="@item.Value"><a>@item.Text</a></li>
+                                        }
+                                    }
+                                </ul>
+                                @Html.ValidationMessage("producer")
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div style="width: 690px; margin-left: 10px; float: left">
+
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Module Name<span class="mandatory">*</span></label>
+                            <div class="col-sm-9" style="padding-left: 0">
+                                <input type="text" name="name" value="@Model.name" class="form-control" style="max-width: 500px;">
+                                @Html.ValidationMessage("name")
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-horizontal longTextContainer" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Description<span class="mandatory">*</span></label>
+                            <div class="col-sm-9" style="padding-left: 0">
+                                <textarea name="discrption" class="form-control tinymce" style="width: 530px; height: 320px; position: relative; left: -6px;">@Model.discrption</textarea>
+                                @Html.ValidationMessage("discrption")
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Video id<span class="mandatory">*</span></label>
+                            <div class="col-sm-9" style="padding-left: 0">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.url))
+                                    {
+                                        int index = Model.url.LastIndexOf('/');
+                                        index = index == -1 ? 0 : index + 1;
+                                        string url = Model.url.Substring(index);
+                                        <input type="text" name="url" value="@url" class="form-control" style="max-width: 500px;">
+                                    }
+                                    else
+                                    {
+                                        <input type="text" name="url" value="@Model.url" class="form-control" style="max-width: 500px;">
+                                    }
+                                }
+                                @Html.ValidationMessage("url")
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="courseId" value="@ViewBag.CourseId">
+                    <input type="hidden" name="id" value="@Model.id">
+                    <input type="submit" class="btn" style="background-color: rgb(242, 244, 246); float: right; padding: 2px 8px; margin-right: 15px; color: #5E5858; font-weight: bold; font-size: 16px; font-family: Calibre, sans-serif;" value="SAVE" />
+                </div>
+            </div>
+            <div style="clear: both"></div>
+            <br>
+            <br>
+            <div class="center-block" style="width: 900px; position: relative; right: 30px;">
+                <span class="qustionBlockHeader">Training exercises</span>
+                <hr>
+                <ul class="questionsContainer" id="questionsContainer">
+                    @{ int i = 0; }
+
+                    @if (ViewBag.questions != null)
+                    {
+
+                        foreach (Question questionItem in ViewBag.questions)
+                        {
+                            i++;
+                            var textItem = questionItem.textQuestion;
+                            var textItemAnswers = questionItem.textQuestionAsnwers;
+                            var picItem = questionItem.pictureQuestion;
+
+                            var itemId = "itemId" + i;
+                            var textItemId = "textItemId" + i;
+                            var moduleFirstAnswers = "moduleFirstAnswers" + i;
+                            var secondAnswerPreview = "secondAnswerPreview" + i;
+                            var secondAnswerPreviewId = "#secondAnswerPreview" + i;
+                            var moduleSecondAnswers = "moduleSecondAnswers" + i;
+                            var rightAnswerPreview = "rightAnswerPreview" + i;
+                            var firstAnswerPreview = "firstAnswerPreview" + i;
+                            var firstAnswerPreviewId = "#firstAnswerPreview" + i;
+                            var moduleCorrectAnswers = "moduleCorrectAnswers" + i;
+                            var rightAnswerPreviewId = "#rightAnswerPreview" + i;
+                            var isFirstCorrect = "isFirstCorrect" + i;
+                            var questionType = "questionType" + i;
+                            var textQuestion = "textQuestion" + i;
+                            string image1Select = "";
+                            string image2Select = "";
+                            string image1Url = "";
+                            string image2Url = "";
+                            int typeOfQuestion = 0;
+                            string quest1Select;
+                            string quest2Select;
+                            string quest1Style;
+                            string quest2Style;
+                            if (questionItem.pictureQuestion != null)
+                            {
+
+                                image1Select = picItem.IsImage1Correct ? "checbox selected" : "checbox";
+                                image2Select = picItem.IsImage2Correct ? "checbox selected" : "checbox";
+
+                                quest1Select = "selected";
+                                quest2Select = "";
+                                quest1Style = "display : normal";
+                                quest2Style = "display: none";
+
+                                image1Url = picItem.IsImage1Correct ? "/Content/icons/roudnChecked.png" : "/Content/icons/roudnUnChecked.png";
+                                image2Url = picItem.IsImage2Correct ? "/Content/icons/roudnChecked.png" : "/Content/icons/roudnUnChecked.png";
+
+                                typeOfQuestion = 1;
+
+                                <li>
+
+                                    <div id="dropdownquestiontype_@i" class="btn-group dropdownquestiontype" style="padding-bottom: 0px;">
+                                        <button type="button" class="btn btn-default lable">Type of questions</button>
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <input type="hidden" name="@questionType" id="@questionType" value="@typeOfQuestion" />
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li data-item="1" class="@quest1Select"><a>Correct/Wrong Image</a></li>
+                                            <li data-item="2" class="@quest2Select"><a>Multiple text question</a></li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="num">
+                                        @i
+                                    </div>
+
+                                    <div id="dropdownquestiontype_@(i)_pic" class="pictureQuestion" style="@quest1Style">
+                                        <div class="firstAnswer answerBlock">
+                                            <div class="modulePanel">
+                                                <input type="hidden" class="isCorrect" name="@isFirstCorrect" value="@Convert.ToInt32(picItem.IsImage1Correct)" />
+                                                <div class="answer correct">
+                                                    <img class="icon" src="/Content/icons/smailFunny.png">
+                                                    <img class="@image1Select" src="@image1Url">
+                                                </div>
+                                                <div class="answer wrong">
+                                                    <img class="icon" src="/Content/icons/smailSaid.png">
+                                                    <img class="@image2Select" src="@image2Url">
+                                                </div>
+                                                <i class="delete fa fa-trash"></i>
+                                            </div>
+                                            <input type="file" style="display: none;" class="image" name="@moduleFirstAnswers" data-preview="@firstAnswerPreviewId" />
+                                            <img class="answer" id="@firstAnswerPreview" src="@picItem.ImageUrl1" alt="">
+                                            <div class="foto">
+                                                <i class="fa fa-camera"></i>
+                                            </div>
+
+                                        </div>
+                                        <div class="secondAnswer answerBlock">
+                                            <div class="modulePanel">
+                                                <input type="hidden" class="isCorrect" name="isSecondCorrect" value="@Convert.ToInt32(picItem.IsImage2Correct)" />
+                                                <div class="answer correct">
+                                                    <img class="icon" src="/Content/icons/smailFunny.png">
+                                                    <img class="@image2Select" src="@image2Url">
+                                                </div>
+                                                <div class="answer wrong">
+                                                    <img class="icon" src="/Content/icons/smailSaid.png">
+                                                    <img class="@image1Select" src="@image1Url">
+                                                </div>
+
+                                                <i class="delete fa fa-trash"></i>
+                                            </div>
+                                            <input type="file" style="display: none;" class="image" name="@moduleSecondAnswers" data-preview="@secondAnswerPreviewId" />
+                                            <img class="answer" id="@secondAnswerPreview" src="@picItem.ImageUrl2" alt="">
+                                            <div class="foto">
+                                                <i class="fa fa-camera"></i>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="line"></div>
+                                        <div class="rightAnswer answerBlock">
+                                            <div class="modulePanel">
+                                                <div class="lable">Focus Points</div>
+                                                <i class="delete fa fa-trash"></i>
+                                            </div>
+                                            <input type="file" style="display: none;" class="image" id="files" name="@moduleCorrectAnswers" data-preview="@rightAnswerPreviewId" />
+                                            <img class="answer" id="@rightAnswerPreview" src="@picItem.imageFocusUrl" alt=" ">
+                                            <div class=" foto">
+                                                <i class="fa fa-camera"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="dropdownquestiontype_@(i)_text" style="@quest2Style">
+                                        <div class="form-horizontal" role="form">
+                                            <div class="form-group col-sm-12">
+                                                <label class="control-label col-sm-2" style="float:left; padding-left:20px;">Question<span class="mandatory">*</span></label>
+                                                <div class="col-sm-10" style="float: left; padding-left: 5px;">
+                                                    <input type="text" name="@textQuestion" value="" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modulePanel">
+                                            <input type="hidden" class="isCorrect" name="isQuestion1Answer1Correct" value="1" />
+                                            <div class="answer correct">
+                                                <img class="icon" src="/Content/icons/smailFunny.png">
+                                                <img class="@image2Select" src="@image2Url">
+                                            </div>
+                                            <div class="answer wrong">
+                                                <img class="icon" src="/Content/icons/smailSaid.png">
+                                                <img class="@image1Select" src="@image1Url">
+                                            </div>
+                                            <div class="form-inline" style="float: left; width: 78%">
+                                                <label class="control-label" style="float: left; padding-left: 20px;">Alternative<span class="mandatory">*</span></label>
+                                                <input type="text" name="alternative" class="form-control" value="" style="margin-left: 30px; float:left; width:80%;">
+                                            </div>
+                                            <i class="deleteAlternative fa fa-trash"></i>
+                                        </div>
+                                        <div class="addAlternative" id="addAlternative@(i)">
+                                            +
+                                        </div>
+                                        <input type="hidden" name="question@(i)AnswersCount" id="question@(i)AnswersCount">
+                                    </div>
+                                    <input type="hidden" class="questionId" name="@itemId" value="@picItem.QuestionId" />
+                                    <input type="hidden" class="questionId textQuestionId" name="@textItemId" value="0" />
+                                </li>
+                            }
+                            else
+                            {
+
+                                quest1Select = "";
+                                quest2Select = "selected";
+                                quest1Style = "display : none";
+                                quest2Style = "display: normal";
+
+                                image1Select = "checbox selected";
+                                image2Select = "checbox";
+
+                                image1Url = "/Content/icons/roudnChecked.png";
+                                image2Url = "/Content/icons/roudnUnChecked.png";
+
+                                typeOfQuestion = 2;
+                                int k = 0;
+                                <li>
+
+                                    <div id="dropdownquestiontype_@i" class="btn-group dropdownquestiontype" style="padding-bottom: 0px;">
+                                        <button type="button" class="btn btn-default lable">Type of questions</button>
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <input class="inputTypeOfQuestion" type="hidden" name="@questionType" id="@questionType" value="@typeOfQuestion" />
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li data-item="1" class="@quest1Select"><a>Correct/Wrong Image</a></li>
+                                            <li data-item="2" class="@quest2Select"><a>Multiple text question</a></li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="num">
+                                        @i
+                                    </div>
+
+                                    <div id="dropdownquestiontype_@(i)_pic" class="pictureQuestion" style="@quest1Style">
+                                        <div class="firstAnswer answerBlock">
+                                            <div class="modulePanel">
+                                                <input type="hidden" class="isCorrect" id="@questionType" name="@isFirstCorrect" value="" />
+                                                <div class="answer correct">
+                                                    <img class="icon" src="/Content/icons/smailFunny.png">
+                                                    <img class="@image1Select" src="@image1Url">
+                                                </div>
+                                                <div class="answer wrong">
+                                                    <img class="icon" src="/Content/icons/smailSaid.png">
+                                                    <img class="@image2Select" src="@image2Url">
+                                                </div>
+                                                <i class="delete fa fa-trash"></i>
+                                            </div>
+                                            <input type="file" style="display: none;" class="image" name="@moduleFirstAnswers" data-preview="@firstAnswerPreviewId" />
+                                            <img class="answer" id="@firstAnswerPreview" src="" alt="">
+                                            <div class="foto">
+                                                <i class="fa fa-camera"></i>
+                                            </div>
+
+                                        </div>
+                                        <div class="secondAnswer answerBlock">
+                                            <div class="modulePanel">
+                                                <input type="hidden" class="isCorrect" name="isSecondCorrect" value="" />
+                                                <div class="answer correct">
+                                                    <img class="icon" src="/Content/icons/smailFunny.png">
+                                                    <img class="@image2Select" src="@image2Url">
+                                                </div>
+                                                <div class="answer wrong">
+                                                    <img class="icon" src="/Content/icons/smailSaid.png">
+                                                    <img class="@image1Select" src="@image1Url">
+                                                </div>
+
+                                                <i class="delete fa fa-trash"></i>
+                                            </div>
+                                            <input type="file" style="display: none;" class="image" name="@moduleSecondAnswers" data-preview="@secondAnswerPreviewId" />
+                                            <img class="answer" id="@secondAnswerPreview" src="" alt="">
+                                            <div class="foto">
+                                                <i class="fa fa-camera"></i>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="line"></div>
+                                        <div class="rightAnswer answerBlock">
+                                            <div class="modulePanel">
+                                                <div class="lable">Focus Points</div>
+                                                <i class="delete fa fa-trash"></i>
+                                            </div>
+                                            <input type="file" style="display: none;" class="image" id="files" name="@moduleCorrectAnswers" data-preview="@rightAnswerPreviewId" />
+                                            <img class="answer" id="@rightAnswerPreview" src="" alt=" ">
+                                            <div class=" foto">
+                                                <i class="fa fa-camera"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="dropdownquestiontype_@(i)_text" style="@quest2Style">
+                                        <div class="form-horizontal" role="form">
+                                            <div class="form-group col-sm-12">
+                                                <label class="control-label col-sm-2" style="float:left; padding-left:20px;">Question<span class="mandatory">*</span></label>
+                                                <div class="col-sm-10" style="float: left; padding-left: 5px;">
+                                                    <input type="text" name="@textQuestion" value="@textItem.Question" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        @foreach (var answer in textItemAnswers)
+                                        {
+                                            k++;
+                                            var image1 = !answer.IsAnswerCorrect ? "/Content/icons/roudnChecked.png" : "/Content/icons/roudnUnChecked.png";
+                                            var image2 = answer.IsAnswerCorrect ? "/Content/icons/roudnChecked.png" : "/Content/icons/roudnUnChecked.png";
+
+                                            var image1Sel = !answer.IsAnswerCorrect ? "checbox selected" : "checbox";
+                                            var image2Sel = answer.IsAnswerCorrect ? "checbox selected" : "checbox";
+                                            
+                                            <div class="modulePanel modulePanel@(i)">
+                                                <input type="hidden" class="isCorrect" name="isQuestion@(i)AnswerCorrect" value="@Convert.ToInt32(answer.IsAnswerCorrect)" />
+                                                <div class="answer correct">
+                                                    <img class="icon" src="/Content/icons/smailFunny.png">
+                                                    <img class="@image2Sel" src="@image2">
+                                                </div>
+                                                <div class="answer wrong">
+                                                    <img class="icon" src="/Content/icons/smailSaid.png">
+                                                    <img class="@image1Sel" src="@image1">
+                                                </div>
+                                                <div class="form-inline" style="float: left; width: 80%">
+                                                    <label class="control-label" style="float: left; padding-left: 20px;">Alternative<span class="mandatory">*</span></label>
+                                                    <input type="text" name="alternative@(i)" class="form-control" value="@answer.Answer" style="margin-left: 30px; float:left; width:80%;">
+                                                </div>
+                                                <i class="deleteAlternative fa fa-trash"></i>
+                                            </div>
+                                        }
+
+                                        <div class="addAlternative" id="addAlternative@(i)">
+                                            +
+                                        </div>
+                                        <input type="hidden" name="question@(i)AnswersCount" id="question@(i)AnswersCount">
+                                    </div>
+                                    <input type="hidden" class="questionId" name="@itemId" value="0" />
+                                    <input type="hidden" class="questionId textQuestionId" name="@textItemId" value="@textItem.ModuleTextQuestionId" />
+                                </li>
+                            }
+
+
+                        }
+                    }
+                        <li>
+                            <div class="addItem num">
+                                +
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <input type="hidden" name="questionCount" id="questionCount" value="">
+        </form>
+    </div>
+
+
+    <script src="/assets/plugins/forms/tags/jquery.tagsinput.min.js"></script>
+    <script src="/assets/plugins/forms/tinymce/tinymce.min.js"></script>
+    <script src="/assets/plugins/misc/highlight/highlight.pack.js"></script>
+    <script src="/assets/plugins/misc/countTo/jquery.countTo.js"></script>
+    <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+    <script src="/Scripts/views/module.js"></script>
+    <div id="templayts" style="display: none">
+    </div>
+
+    <div id="templateNewQuestionAlternative" style="display:none">
+    </div>

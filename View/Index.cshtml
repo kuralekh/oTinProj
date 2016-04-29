@@ -1,0 +1,155 @@
+﻿@using Microsoft.Ajax.Utilities
+@using NewDB
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+}
+
+<script src="/Scripts/jquery.cookie.min.js"></script>
+
+<div class="container container-full">
+    <div class="course-header">
+        
+        @*<img class="img-responsive" src="~/Content/img/header2.png" />*@
+        <img class="img-responsive" src="@Session["loginLogoUrl"].ToString()"/>
+        @if (Session["startVidio"] != null && !String.IsNullOrWhiteSpace(Session["startVidio"].ToString()))
+        {
+            <button id="videoPlay" class="btn-transparent" data-toggle="modal" data-target="#videoModal">
+                <i class="im-play2" style="float: left;"></i>
+            </button>
+        }
+       
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="embed-container">
+                    
+                    <iframe id="vimeoplayer" src="@Session["startVidio"].ToString()" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container courses">
+    <div class="indexTitle">My Courses</div>
+    <hr>
+    <div class="courses_block">
+        @foreach (MasterCourses item in ViewBag.courses)
+        {
+            <div class="course_module_block">
+                <a href="/Course/Course/?id=@item.Id">
+                    <div class="course-module-thumb">
+                        <img class="coureImg" src="@item.CoverUrl@ViewBag.midlle" />
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function getInternetExplorerVersion() {
+            var rv = -1;
+            if (navigator.appName == 'Microsoft Internet Explorer') {
+                var ua = navigator.userAgent;
+                var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+                if (re.exec(ua) != null)
+                    rv = parseFloat(RegExp.$1);
+            }
+            else if (navigator.appName == 'Netscape') {
+                var ua = navigator.userAgent;
+                var re = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+                if (re.exec(ua) != null)
+                    rv = parseFloat(RegExp.$1);
+            }
+            return rv;
+        }
+        function getFirefox()
+        {
+            var rv = -1;
+
+            var ua = navigator.userAgent;
+            rv = ua.search('Firefox');
+
+            return rv;
+        }
+        function resizeWindow()
+        {
+            $('.col-sm-4').removeClass('col-sm-4').addClass('col-sm-5');
+            if ($(window).width() <= 1200) {
+                $('.col-sm-5').removeClass('col-md-3').addClass('col-md-4');
+            }
+            $(window).resize(function () {
+                if ($(window).width() <= 1200) {
+                    $('.col-sm-5').removeClass('col-md-3').addClass('col-md-4');
+                }
+                if ($(window).width() > 1200) {
+                    $('.col-sm-5').removeClass('col-md-4').addClass('col-md-3');
+                }
+            });
+        }
+        $(document).ready(function () {
+            var img = $('.container.courses').find('img');
+            $(img).each(function(){
+               this.addEventListener("error", function () {
+                    this.src = "/Content/courses/cover.png";
+                });
+            })
+                var froogaloop;
+                var isNotLoad = true;   
+                $('#videoModal').on('show.bs.modal', function (e) {
+                    console.log(e);
+                    var player = $f($("#vimeoplayer")[0]);
+                    player.addEvent('ready', readyPlayer);
+                    setTimeout(function () {
+                        if (isNotLoad) {
+                            readyPlayer('vimeoplayer');
+                        }
+                    }, 100);
+                });
+                
+                if (getInternetExplorerVersion() !== -1)
+                {
+                    resizeWindow();
+                }
+                else if (getFirefox() !== -1)
+                {
+                    resizeWindow();
+                }
+                $('#videoModal').on('hide.bs.modal', function(e) {
+                    if (froogaloop != undefined) froogaloop.api('unload');
+                    isNotLoad = true;
+                });
+
+                function readyPlayer(player_id) {
+                    froogaloop = $f(player_id);
+            
+                    if (froogaloop != undefined) {
+                        isNotLoad = false;
+                        froogaloop.addEvent('play', function() {
+                            console.log('play');
+                        });
+                        froogaloop.addEvent('finish', function() {
+                            console.log('finish');
+                            $('#videoModal').modal('hide');
+                            location.href = $('a.btn-start-course').attr('href');
+                        });
+
+                        froogaloop.api('play');
+                    } else {
+                        setTimeout(readyPlayer(player_id), 100);
+                    }
+                }
+    });
+    </script>
+}
